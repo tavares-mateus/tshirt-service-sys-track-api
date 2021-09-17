@@ -1,0 +1,4 @@
+%dw 2.0
+
+type auto_f7b6afc7_8659_487f_883b_c6df9ef4af52_Output_Payload = Array<{|  orderId: Number,   status: String|}>
+

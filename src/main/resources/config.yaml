@@ -1,0 +1,8 @@
+db:
+  url: "jdbc:postgresql://ec2-54-81-126-150.compute-1.amazonaws.com:5432/dcjlhll5lsjuju"
+  driver: "org.postgresql.Driver"
+  user: "fbbskxqiluleit"
+  password: "a511ccf4764857e5b944a99ce2aa209ee0b6f99bcbd98c8fb201f8d0fca03fed"
+
+http:
+  port: "8081"

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:validation="http://www.mulesoft.org/schema/mule/validation" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/validation http://www.mulesoft.org/schema/mule/validation/current/mule-validation.xsd">
+	<flow name="getOrderTrack" doc:id="f7b6afc7-8659-487f-883b-c6df9ef4af52" >
+		<db:select doc:name="Track an Order by Id" doc:id="17b6ad79-7796-45c7-8eed-149263ede9ec" config-ref="Heroku_Database_Config">
+			<db:sql ><![CDATA[SELECT * FROM public."TRACK"
+WHERE "orderId" = :orderId]]></db:sql>
+			<db:input-parameters ><![CDATA[#[{
+	orderId: attributes.uriParams.orderId 
+}]]]></db:input-parameters>
+		</db:select>
+		<validation:is-not-empty-collection doc:id="e7799e83-e4bf-4254-8caa-ef4aea02ea40" config-ref="Validation_Config" message="Order(s) Not Found!" doc:name="Is not empty collection">
+			<error-mapping sourceType="VALIDATION:EMPTY_COLLECTION" targetType="APP:NOT_FOUND" />
+		</validation:is-not-empty-collection>
+		<ee:transform doc:name="Java to JSON" doc:id="80a0569e-3dbd-4106-831f-e7d76f83c518" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload map(value, index) -> {
+	"orderId": value.orderId,
+	"status": value.status 
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>
