@@ -29,4 +29,81 @@ payload map(value, index) -> {
 			</ee:message>
 		</ee:transform>
 	</flow>
+	<flow name="postOrderTrack" doc:id="12033f8c-5382-42ac-b3ea-3659976a606d" >
+		<ee:transform doc:name="JSON to Java" doc:id="6b8cf2e4-1741-4a1d-970c-4c563bc299a9" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<db:insert doc:name="Insert Order Track" doc:id="15da7412-e2bd-4cce-b0d8-aebd110dd692" config-ref="Heroku_Database_Config">
+			<db:sql ><![CDATA[INSERT INTO public."TRACK"(
+	"orderId", "status")
+VALUES (:orderId, :status)]]></db:sql>
+			<db:input-parameters ><![CDATA[#[{
+	orderId: attributes.uriParams.orderId,
+	status: payload.status
+}]]]></db:input-parameters>
+		</db:insert>
+		<ee:transform doc:name="Order Track Created" doc:id="67d9685b-e130-4141-9fbe-cbb423640db0" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"message": "Order track status created!"
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="updateOrderTrack" doc:id="72785f6d-aac1-4dc8-9c0a-e8c2c7420c62" >
+		<db:update doc:name="Update Order Track" doc:id="553f1bbb-00d4-4044-b2e6-3df313436589" config-ref="Heroku_Database_Config">
+			<db:sql ><![CDATA[UPDATE public."TRACK"
+SET 
+	"status" = :status
+WHERE "orderId" = :orderId]]></db:sql>
+			<db:input-parameters ><![CDATA[#[{
+	orderId: message.attributes.uriParams.orderId,
+	status: payload.status
+}]]]></db:input-parameters>
+		</db:update>
+		<validation:is-true doc:name="payload.affectedRows == 1" doc:id="f07de6f8-fb29-40f0-b7ce-cfc557ca94e1" config-ref="Validation_Config" expression="#[payload.affectedRows == 1]" message="Order(s) Track Not Found!" >
+			<error-mapping sourceType="VALIDATION:INVALID_BOOLEAN" targetType="APP:NOT_FOUND" />
+		</validation:is-true>
+		<ee:transform doc:name="Order Track Updated" doc:id="96c4686b-7a5b-4157-a2e1-46d2000a049d" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"message": "Order track status updated!"
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="deleteOrderTrack" doc:id="c076d6c1-dbff-4f10-b27b-2f90bd8e2d2d" >
+		<db:delete doc:name="Delete Order Track" doc:id="938d163c-cf1b-4711-a2b6-e75c95dfb157" config-ref="Heroku_Database_Config">
+			<db:sql ><![CDATA[DELETE
+FROM public."TRACK"
+WHERE "orderId" = :orderId]]></db:sql>
+			<db:input-parameters ><![CDATA[#[{
+	'orderId': message.attributes.uriParams.orderId
+}]]]></db:input-parameters>
+		</db:delete>
+		<validation:is-true doc:name="payload == 1" doc:id="d98e1080-ec2b-4f0f-a8ef-749146bd54bd" config-ref="Validation_Config" expression="#[payload == 1]" message="Order(s) Not Found!" >
+			<error-mapping sourceType="VALIDATION:INVALID_BOOLEAN" targetType="APP:NOT_FOUND" />
+		</validation:is-true>
+		<ee:transform doc:name="Order Track Deleted" doc:id="3b954afd-3bc5-4c91-aa5f-711f138f38e1" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+  message: "Order track deleted!"
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
 </mule>

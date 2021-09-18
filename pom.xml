@@ -55,13 +55,6 @@
 			<classifier>mule-plugin</classifier>
 		</dependency>
 		<dependency>
-			<groupId>f36a6db6-b129-4fa3-9f09-674196c546bf</groupId>
-			<artifactId>t-shirt-service-track-system-api</artifactId>
-			<version>1.0.0</version>
-			<classifier>raml</classifier>
-			<type>zip</type>
-		</dependency>
-		<dependency>
 			<groupId>org.mule.modules</groupId>
 			<artifactId>mule-apikit-module</artifactId>
 			<version>1.5.5</version>
@@ -83,6 +76,13 @@
 			<artifactId>mule-validation-module</artifactId>
 			<version>1.4.5</version>
 			<classifier>mule-plugin</classifier>
+		</dependency>
+		<dependency>
+			<groupId>f36a6db6-b129-4fa3-9f09-674196c546bf</groupId>
+			<artifactId>t-shirt-service-track-system-api</artifactId>
+			<version>1.0.8</version>
+			<classifier>raml</classifier>
+			<type>zip</type>
 		</dependency>
 	</dependencies>
 
